@@ -1,0 +1,46 @@
+---
+- name: kubeflow
+  hosts: master1
+  gather_facts: no
+ 
+  vars:
+    ansible_become_pass: "ccma"
+
+  tasks:
+    # ks
+    - name: Download ksonnet
+      get_url: 
+        url: https://github.com/ksonnet/releases/download/v0.13.1/ks_0.13.1_linux_amd64.tar.gz
+        dest: /tmp/ks_0.13.1_linux_amd64.tar.gz
+        validate_certs: no 
+
+    - name: Create the bin directory if it does not exist
+      file:
+        path: /home/ccma/bin
+        state: directory
+        mode: 0755
+
+    - name: Extract ks file
+      unarchive: 
+        src: /tmp/ks_0.13.1_linux_amd64.tar.gz
+        dest: /home/ccma/bin/
+        remote_src: yes
+
+    # kubeflow
+    - name: Create the kubeflow directory if it does not exist
+      file:
+        path: /home/ccma/kubeflow
+        state: directory
+        mode: 0755
+
+    - name: Download kubeflow
+      get_url: 
+        url: https://github.com/kubeflow/kubeflow/releases/download/v0.5.1/kfctl_v0.5.1_linux.tar.gz
+        dest: /tmp/kfctl_v0.5.1_linux.tar.gz
+        validate_certs: no 
+
+    - name: Extract kubeflow file
+      unarchive: 
+        src: /tmp/kfctl_v0.5.1_linux.tar.gz
+        dest: /home/ccma/kubeflow/
+        remote_src: yes
