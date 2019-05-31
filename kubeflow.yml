@@ -92,3 +92,39 @@
     - name: Debug kfctl_apply
       debug:
         var: kfctl_apply
+
+    # Deploy PyTorch
+    - name: Deploy PyTorch
+      become: yes
+      shell: "ks apply default -c pytorch-operator"
+      environment:
+        PATH: "/home/ccma/bin/ks_0.13.1_linux_amd64:/home/ccma/.kube/config:/home/ccma/kubeflow"
+      args:
+        chdir: /home/ccma/kubeflow/kfapp/ks_app
+      register: deploy_pytorch
+
+    - name: Debug deploy_pytorch
+      debug:
+        var: deploy_pytorch
+
+    # Setup PersistentVolume
+    - name: Copy storage.yml to remote
+      copy: 
+        src: storage.yml
+        dest: /home/ccma/kubeflow/kfapp/storage.yml
+        owner: ccma
+        group: ccma
+        mode: 0644
+
+    - name: Run kubectl create --filename storage.yml
+      become: yes
+      shell: "kubectl create --filename storage.yml"
+      environment:
+        KUBECONFIG: /home/ccma/.kube/config
+      args:
+        chdir: /home/ccma/kubeflow/kfapp
+      register: create_storage
+
+    - name: Debug create_storage
+      debug:
+        var: create_storage

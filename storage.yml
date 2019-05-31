@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pipeline-mysql-pv
+  namespace: kubeflow
+  labels:
+    type: local
+    app: pipeline-mysql-pv
+    key: kubeflow-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/pipeline-mysql
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  namespace: kubeflow
+  labels:
+    app: pipeline-mysql-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      app: pipeline-mysql-pv
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pipeline-minio-pv
+  namespace: kubeflow
+  labels:
+    type: local
+    app: pipeline-minio-pv
+    key: kubeflow-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/pipeline-minio
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pv-claim
+  namespace: kubeflow
+  labels:
+    app: pipeline-minio-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      app: pipeline-minio-pv
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: katib-mysql
+  namespace: kubeflow
+  labels:
+    type: local
+    app: katib-mysql
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/katib-mysql
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: katib-mysql
+  namespace: kubeflow
+  labels:
+    app: katib-mysql-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      app: katib-mysql
