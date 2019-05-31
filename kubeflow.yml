@@ -44,3 +44,51 @@
         src: /tmp/kfctl_v0.5.1_linux.tar.gz
         dest: /home/ccma/kubeflow/
         remote_src: yes
+
+    - name: update the PATH variable
+      become: yes
+      lineinfile:
+        dest: /etc/environment
+        state: present
+        backrefs: yes
+        regexp: 'PATH=(["]*)((?!.*?/home/ccma/kubeflow/).*?)(["]*)$'
+        line: 'PATH=\1\2:/home/ccma/kubeflow/\3'
+
+    - name: Setup and deploy kubeflow
+      become: yes
+      shell: "kfctl init kfapp"
+      environment:
+        PATH: "/home/ccma/bin/ks_0.13.1_linux_amd64:/home/ccma/.kube/config:/home/ccma/kubeflow"
+      args:
+        chdir: /home/ccma/kubeflow
+      register: deploy_kubeflow 
+
+    - name: Debug deploy_kubeflow 
+      debug:
+        var: deploy_kubeflow 
+ 
+    - name: kfctl_generate
+      become: yes
+      shell: "kfctl generate all -V"
+      environment:
+        PATH: "/home/ccma/bin/ks_0.13.1_linux_amd64:/home/ccma/.kube/config:/home/ccma/kubeflow"
+      args:
+        chdir: /home/ccma/kubeflow/kfapp
+      register: kfctl_generate
+
+    - name: Debug kfctl_generate
+      debug:
+        var: kfctl_generate
+
+    - name: kfctl_apply
+      become: yes
+      shell: "kfctl apply all -V"
+      environment:
+        PATH: "/home/ccma/bin/ks_0.13.1_linux_amd64:/home/ccma/.kube/config:/home/ccma/kubeflow"
+      args:
+        chdir: /home/ccma/kubeflow/kfapp
+      register: kfctl_apply
+
+    - name: Debug kfctl_apply
+      debug:
+        var: kfctl_apply
